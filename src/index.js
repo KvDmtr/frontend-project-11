@@ -1,3 +1,4 @@
 import './styles.scss';
+import app from './app.js';
 
-console.log('Hello World!');
+app();
