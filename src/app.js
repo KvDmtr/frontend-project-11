@@ -1,7 +1,11 @@
+import i18next from 'i18next';
+import resources from './locales/ru.js';
 import watch from './view.js';
 import validate from './utils/indexYup.js';
 
-export default () => {
+export default async () => {
+  const defaultLang = 'ru';
+
   const form = document.querySelector('form');
   const input = form.querySelector('input');
 
@@ -14,13 +18,20 @@ export default () => {
     feeds: [],
   };
 
-  const watchedState = watch(state);
+  const i18n = i18next.createInstance();
+  await i18n.init({
+    lng: defaultLang,
+    debug: false,
+    resources,
+  });
+
+  const watchedState = watch(i18n, state);
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const { value } = input;
-    state.url = value;
-    validate(state.url, state.urlUniqueLinks)
+    watchedState.url = value;
+    validate(state.url, watchedState.urlUniqueLinks)
       .then(() => {
         watchedState.isValid = true;
         watchedState.urlUniqueLinks.push(value);
