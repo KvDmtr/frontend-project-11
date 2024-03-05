@@ -12,7 +12,11 @@ export default {
         invalidUrlError: 'Ссылка должна быть валидным URL!',
         existRssError: 'RSS уже существует',
         correctUrl: 'RSS успешно загружен',
+        networkError: 'Ошибка сети',
+        invalidRSSResource: 'Ресурс не содержит валидный RSS',
       },
+      posts: 'Посты',
+      feeds: 'Фиды',
     },
   },
 };
