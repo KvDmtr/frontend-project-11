@@ -3,6 +3,8 @@ import createCard from './utils/createCard.js';
 
 const input = document.querySelector('input');
 const feedBackElem = document.querySelector('.feedback');
+const postsContainer = document.querySelector('.posts');
+const feedsContainer = document.querySelector('.feeds');
 const staticElements = {
   rssAggregatorTitle: document.querySelector('#title'),
   rssAggregatorDesc: document.querySelector('#description'),
@@ -36,11 +38,11 @@ export default (i18n, state) => {
   };
 
   const renderPosts = (watchedState) => {
-    const postsContainer = document.querySelector('.posts');
     if (!postsContainer.childNodes.length) {
       createCard(postsContainer, i18n.t('posts'));
     }
     const listForPosts = document.querySelector('ul.posts');
+    console.log(watchedState.posts);
     watchedState.posts.forEach(({
       title, link, id,
     }) => {
@@ -58,7 +60,6 @@ export default (i18n, state) => {
   };
 
   const renderFeeds = (watchedState) => {
-    const feedsContainer = document.querySelector('.feeds');
     if (!feedsContainer.childNodes.length) {
       createCard(feedsContainer, i18n.t('feeds'));
     }
@@ -76,7 +77,7 @@ export default (i18n, state) => {
       feedDesc.textContent = description;
       itemLi.append(feedTitle);
       itemLi.append(feedDesc);
-      listForFeeds.append(itemLi);
+      listForFeeds.prepend(itemLi);
     });
   };
 

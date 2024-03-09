@@ -42,10 +42,9 @@ export default async () => {
         const feedsWithId = feeds.map((feed) => ({ ...feed, id: uniqueId() }));
         watchedState.isValid = true;
         watchedState.urlUniqueLinks.push(url);
-        watchedState.posts = postsWithId;
+        watchedState.posts.unshift(...postsWithId);
         watchedState.feeds = feedsWithId;
         watchedState.errors = '';
-        console.log(feeds, posts);
       })
       .catch((error) => {
         watchedState.isValid = false;
