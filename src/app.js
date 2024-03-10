@@ -6,6 +6,7 @@ import watch from './view.js';
 import validate from './utils/indexYup.js';
 import createURL from './utils/createUrl.js';
 import parseData from './utils/parser.js';
+import updatePosts from './utils/updatePosts.js';
 
 export default async () => {
   const defaultLang = 'ru';
@@ -61,4 +62,6 @@ export default async () => {
         }
       });
   });
+
+  updatePosts(watchedState);
 };

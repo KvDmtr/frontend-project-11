@@ -42,7 +42,7 @@ export default (i18n, state) => {
       createCard(postsContainer, i18n.t('posts'));
     }
     const listForPosts = document.querySelector('ul.posts');
-    console.log(watchedState.posts);
+    listForPosts.innerHTML = '';
     watchedState.posts.forEach(({
       title, link, id,
     }) => {
