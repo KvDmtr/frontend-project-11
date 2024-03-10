@@ -7,6 +7,9 @@ export default {
         formPlaceholder: 'Ссылка RSS',
         formButton: 'Добавить',
         formExample: 'Пример: https://lorem-rss.hexlet.app/feed',
+        view: 'Просмотр',
+        closeBtn: 'Закрыть',
+        readBtn: 'Читать полностью',
       },
       feedBackTexts: {
         invalidUrlError: 'Ссылка должна быть валидным URL!',

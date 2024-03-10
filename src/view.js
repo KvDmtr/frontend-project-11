@@ -12,6 +12,12 @@ const staticElements = {
   formButton: document.querySelector('button[aria-label="add"]'),
   formExample: document.querySelector('#example'),
 };
+const modalElements = {
+  modalTitle: document.querySelector('.modal-title'),
+  modalBody: document.querySelector('.modal-body'),
+  readMoreBtn: document.querySelector('.full-article'),
+  modalCloseBtn: document.querySelector('.btn-secondary'),
+};
 
 export default (i18n, state) => {
   const renderTexts = () => {
@@ -48,13 +54,20 @@ export default (i18n, state) => {
     }) => {
       const itemLi = document.createElement('li');
       itemLi.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
+      const buttonPost = document.createElement('button');
+      buttonPost.classList.add('btn', 'btn-outline-primary', 'btn-sm');
+      buttonPost.dataset.PostId = id;
+      buttonPost.setAttribute('type', 'button');
+      buttonPost.dataset.bsToggle = 'modal';
+      buttonPost.dataset.bsTarget = '#modal';
+      buttonPost.textContent = `${i18n.t('interfaceTexts.view')}`;
       const linkToPost = document.createElement('a');
       linkToPost.textContent = title;
       linkToPost.setAttribute('href', link);
       linkToPost.setAttribute('id', id);
       linkToPost.setAttribute('target', '_blank');
       linkToPost.classList.add('fw-bold');
-      itemLi.append(linkToPost);
+      itemLi.append(linkToPost, buttonPost);
       listForPosts.append(itemLi);
     });
   };
@@ -81,6 +94,24 @@ export default (i18n, state) => {
     });
   };
 
+  const renderModal = (watchedState) => {
+    const activePost = watchedState.posts
+      .find((post) => post.id === watchedState.uiState.touchedPostId);
+    const { title, link, description } = activePost;
+    const {
+      modalTitle,
+      modalBody,
+      readMoreBtn,
+      modalCloseBtn,
+    } = modalElements;
+
+    modalTitle.textContent = title;
+    modalBody.textContent = description;
+    readMoreBtn.textContent = i18n.t('interfaceTexts.readBtn');
+    readMoreBtn.href = link;
+    modalCloseBtn.textContent = i18n.t('interfaceTexts.closeBtn');
+  };
+
   const watchedState = onChange(state, (path) => {
     // eslint-disable-next-line default-case
     switch (path) {
@@ -95,6 +126,10 @@ export default (i18n, state) => {
         break;
       case 'feeds':
         renderFeeds(watchedState);
+        break;
+      case 'uiState.touchedPostId':
+        renderModal(watchedState);
+        break;
     }
   });
 

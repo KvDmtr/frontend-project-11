@@ -12,6 +12,7 @@ export default async () => {
   const defaultLang = 'ru';
 
   const form = document.querySelector('form');
+  const postsContainer = document.querySelector('.posts');
 
   const state = {
     errors: '',
@@ -19,6 +20,9 @@ export default async () => {
     urlUniqueLinks: [],
     posts: [],
     feeds: [],
+    uiState: {
+      touchedPostId: '',
+    },
   };
 
   const i18n = i18next.createInstance();
@@ -64,4 +68,12 @@ export default async () => {
   });
 
   updatePosts(watchedState);
+
+  postsContainer.addEventListener('click', (e) => {
+    if (e.target.tagName === 'BUTTON') {
+      const button = e.target;
+      const { PostId } = button.dataset;
+      watchedState.uiState.touchedPostId = PostId;
+    }
+  });
 };
