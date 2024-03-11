@@ -1,4 +1,5 @@
 import i18next from 'i18next';
+import 'bootstrap';
 import axios from 'axios';
 import { uniqueId } from 'lodash';
 import resources from './locales/ru.js';
@@ -21,6 +22,7 @@ export default async () => {
     posts: [],
     feeds: [],
     uiState: {
+      touchedPostsIds: new Set(),
       touchedPostId: '',
     },
   };
@@ -70,10 +72,16 @@ export default async () => {
   updatePosts(watchedState);
 
   postsContainer.addEventListener('click', (e) => {
+    if (e.target.tagName === 'A') {
+      const postId = e.target.id;
+      watchedState.uiState.touchedPostsIds.add(postId);
+    }
+
     if (e.target.tagName === 'BUTTON') {
       const button = e.target;
-      const { PostId } = button.dataset;
-      watchedState.uiState.touchedPostId = PostId;
+      const { postId } = button.dataset;
+      watchedState.uiState.touchedPostsIds.add(postId);
+      watchedState.uiState.touchedPostId = postId;
     }
   });
 };

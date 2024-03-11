@@ -55,11 +55,11 @@ export default (i18n, state) => {
       const itemLi = document.createElement('li');
       itemLi.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
       const buttonPost = document.createElement('button');
-      buttonPost.classList.add('btn', 'btn-outline-primary', 'btn-sm');
-      buttonPost.dataset.PostId = id;
       buttonPost.setAttribute('type', 'button');
+      buttonPost.classList.add('btn', 'btn-outline-primary', 'btn-sm');
       buttonPost.dataset.bsToggle = 'modal';
       buttonPost.dataset.bsTarget = '#modal';
+      buttonPost.dataset.postId = id;
       buttonPost.textContent = `${i18n.t('interfaceTexts.view')}`;
       const linkToPost = document.createElement('a');
       linkToPost.textContent = title;
@@ -112,6 +112,17 @@ export default (i18n, state) => {
     modalCloseBtn.textContent = i18n.t('interfaceTexts.closeBtn');
   };
 
+  const renderTouchedPosts = (watchedState) => {
+    const { touchedPostsIds } = watchedState.uiState;
+    touchedPostsIds.forEach((postId) => {
+      const post = document.getElementById(postId);
+      if (!post.classList.contains('fw-normal')) {
+        post.classList.remove('fw-bold');
+        post.classList.add('fw-normal', 'link-secondary');
+      }
+    });
+  };
+
   const watchedState = onChange(state, (path) => {
     // eslint-disable-next-line default-case
     switch (path) {
@@ -129,6 +140,9 @@ export default (i18n, state) => {
         break;
       case 'uiState.touchedPostId':
         renderModal(watchedState);
+        break;
+      case 'uiState.touchedPostsIds':
+        renderTouchedPosts(watchedState);
         break;
     }
   });
