@@ -18,11 +18,20 @@ Rss Reader — сервис для агрегации RSS-потоков, с п�
 ### Setup
 
 1. Склонировать репозиторий:
-   git clone git@github.com:KvDmtr/frontend-project-11.git
+
+```
+ git clone git@github.com:KvDmtr/frontend-project-11.git
+```
 
 2. Перейти в папку проекта и установить зависимости:
+
+```
    cd frontend-project-11
    make install
+```
 
 3. Запустить сервер разработки:
+
+```
    make develop
+```
