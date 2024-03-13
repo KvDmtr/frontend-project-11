@@ -1,27 +1,9 @@
 import onChange from 'on-change';
 import createCard from './utils/createCard.js';
 
-const input = document.querySelector('input');
-const feedBackElem = document.querySelector('.feedback');
-const postsContainer = document.querySelector('.posts');
-const feedsContainer = document.querySelector('.feeds');
-const staticElements = {
-  rssAggregatorTitle: document.querySelector('#title'),
-  rssAggregatorDesc: document.querySelector('#description'),
-  formPlaceholder: document.querySelector('#placeholder'),
-  formButton: document.querySelector('button[aria-label="add"]'),
-  formExample: document.querySelector('#example'),
-};
-const modalElements = {
-  modalTitle: document.querySelector('.modal-title'),
-  modalBody: document.querySelector('.modal-body'),
-  readMoreBtn: document.querySelector('.full-article'),
-  modalCloseBtn: document.querySelector('.btn-secondary'),
-};
-
-export default (i18n, state) => {
+export default (i18n, state, elements) => {
   const renderTexts = () => {
-    const arrayOfElements = Object.entries(staticElements);
+    const arrayOfElements = Object.entries(elements.staticElements);
     arrayOfElements.forEach(([key, value]) => {
       const element = value;
       element.textContent = i18n.t(`interfaceTexts.${key}`);
@@ -29,6 +11,7 @@ export default (i18n, state) => {
   };
 
   const renderErrors = (watchedState) => {
+    const { input, feedBackElem } = elements;
     input.classList.remove('is-invalid');
     feedBackElem.classList.remove('text-danger', 'text-success');
     if (watchedState.isValid) {
@@ -44,6 +27,7 @@ export default (i18n, state) => {
   };
 
   const renderPosts = (watchedState) => {
+    const { postsContainer } = elements;
     if (!postsContainer.childNodes.length) {
       createCard(postsContainer, i18n.t('posts'));
     }
@@ -73,10 +57,12 @@ export default (i18n, state) => {
   };
 
   const renderFeeds = (watchedState) => {
+    const { feedsContainer } = elements;
     if (!feedsContainer.childNodes.length) {
       createCard(feedsContainer, i18n.t('feeds'));
     }
     const listForFeeds = document.querySelector('ul.feeds');
+    listForFeeds.innerHTML = '';
     watchedState.feeds.forEach(({
       title, description,
     }) => {
@@ -103,7 +89,7 @@ export default (i18n, state) => {
       modalBody,
       readMoreBtn,
       modalCloseBtn,
-    } = modalElements;
+    } = elements.modalElements;
 
     modalTitle.textContent = title;
     modalBody.textContent = description;
@@ -134,6 +120,7 @@ export default (i18n, state) => {
         break;
       case 'posts':
         renderPosts(watchedState);
+        renderTouchedPosts(watchedState);
         break;
       case 'feeds':
         renderFeeds(watchedState);

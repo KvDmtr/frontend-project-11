@@ -3,9 +3,11 @@ import { uniqueId } from 'lodash';
 import createUrl from './createUrl.js';
 import parseData from './parser.js';
 
+const delay = 5000;
+
 const updatePosts = (watchedState) => {
-  const { urlUniqueLinks } = watchedState;
-  const postPromises = urlUniqueLinks.map((link) => axios.get(createUrl(link))
+  const { feeds } = watchedState;
+  const postPromises = feeds.map(({ link }) => axios.get(createUrl(link))
     .then((response) => {
       const responseData = response.data.contents;
       const { posts } = parseData(responseData);
@@ -24,7 +26,7 @@ const updatePosts = (watchedState) => {
 
   Promise.all(postPromises)
     .finally(() => {
-      setTimeout(() => updatePosts(watchedState), 5000);
+      setTimeout(() => updatePosts(watchedState), delay);
     });
 };
 

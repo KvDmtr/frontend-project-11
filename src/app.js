@@ -4,21 +4,40 @@ import axios from 'axios';
 import { uniqueId } from 'lodash';
 import resources from './locales/ru.js';
 import watch from './view.js';
-import validate from './utils/indexYup.js';
+import validate from './utils/validate.js';
 import createURL from './utils/createUrl.js';
 import parseData from './utils/parser.js';
 import updatePosts from './utils/updatePosts.js';
 
+const delay = 5000;
+
+const form = document.querySelector('form');
+const elements = {
+  input: document.querySelector('input'),
+  postsContainer: document.querySelector('.posts'),
+  feedBackElem: document.querySelector('.feedback'),
+  feedsContainer: document.querySelector('.feeds'),
+  staticElements: {
+    rssAggregatorTitle: document.querySelector('#title'),
+    rssAggregatorDesc: document.querySelector('#description'),
+    formPlaceholder: document.querySelector('#placeholder'),
+    formButton: document.querySelector('button[aria-label="add"]'),
+    formExample: document.querySelector('#example'),
+  },
+  modalElements: {
+    modalTitle: document.querySelector('.modal-title'),
+    modalBody: document.querySelector('.modal-body'),
+    readMoreBtn: document.querySelector('.full-article'),
+    modalCloseBtn: document.querySelector('.btn-secondary'),
+  },
+};
+
 export default async () => {
   const defaultLang = 'ru';
-
-  const form = document.querySelector('form');
-  const postsContainer = document.querySelector('.posts');
 
   const state = {
     errors: '',
     isValid: false,
-    urlUniqueLinks: [],
     posts: [],
     feeds: [],
     uiState: {
@@ -34,23 +53,22 @@ export default async () => {
     resources,
   });
 
-  const watchedState = watch(i18n, state);
+  const watchedState = watch(i18n, state, elements);
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const formData = new FormData(form);
     const url = formData.get('url');
-    validate(url, watchedState.urlUniqueLinks)
+    validate(url, watchedState.feeds)
       .then(() => axios.get(createURL(url)))
       .then((response) => {
         const responseData = response.data.contents;
         const { posts, feeds } = parseData(responseData);
         const postsWithId = posts.map((post) => ({ ...post, id: uniqueId() }));
-        const feedsWithId = feeds.map((feed) => ({ ...feed, id: uniqueId() }));
+        const feedsWithId = feeds.map((feed) => ({ ...feed, link: url, id: uniqueId() }));
         watchedState.isValid = true;
-        watchedState.urlUniqueLinks.push(url);
         watchedState.posts.unshift(...postsWithId);
-        watchedState.feeds = feedsWithId;
+        watchedState.feeds.unshift(...feedsWithId);
         watchedState.errors = '';
       })
       .catch((error) => {
@@ -69,9 +87,9 @@ export default async () => {
       });
   });
 
-  updatePosts(watchedState);
+  setTimeout(() => updatePosts(watchedState), delay);
 
-  postsContainer.addEventListener('click', (e) => {
+  elements.postsContainer.addEventListener('click', (e) => {
     if (e.target.tagName === 'A') {
       const postId = e.target.id;
       watchedState.uiState.touchedPostsIds.add(postId);
