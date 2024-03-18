@@ -1,8 +1,6 @@
-import * as yup from 'yup';
-
-yup.setLocale({
+export default {
   mixed: {
     url: () => ({ key: 'feedBackTexts.invalidUrlError' }),
     notOneOf: () => ({ key: 'feedBackTexts.existRssError' }),
   },
-});
+};

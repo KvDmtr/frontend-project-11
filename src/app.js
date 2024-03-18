@@ -32,7 +32,7 @@ const elements = {
   },
 };
 
-export default async () => {
+export default () => {
   const defaultLang = 'ru';
 
   const state = {
@@ -47,7 +47,7 @@ export default async () => {
   };
 
   const i18n = i18next.createInstance();
-  await i18n.init({
+  i18n.init({
     lng: defaultLang,
     debug: false,
     resources,
@@ -59,7 +59,7 @@ export default async () => {
     e.preventDefault();
     const formData = new FormData(form);
     const url = formData.get('url');
-    validate(url, watchedState.feeds)
+    validate(url, watchedState.feeds.map(({ link }) => link))
       .then(() => axios.get(createURL(url)))
       .then((response) => {
         const responseData = response.data.contents;
