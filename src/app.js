@@ -51,55 +51,52 @@ export default () => {
     lng: defaultLang,
     debug: false,
     resources,
-  });
-
-  const watchedState = watch(i18n, state, elements);
-
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const formData = new FormData(form);
-    const url = formData.get('url');
-    validate(url, watchedState.feeds.map(({ link }) => link))
-      .then(() => axios.get(createURL(url)))
-      .then((response) => {
-        const responseData = response.data.contents;
-        const { posts, feeds } = parseData(responseData);
-        const postsWithId = posts.map((post) => ({ ...post, id: uniqueId() }));
-        const feedsWithId = feeds.map((feed) => ({ ...feed, link: url, id: uniqueId() }));
-        watchedState.isValid = true;
-        watchedState.posts.unshift(...postsWithId);
-        watchedState.feeds.unshift(...feedsWithId);
-        watchedState.errors = '';
-      })
-      .catch((error) => {
-        watchedState.isValid = false;
-        switch (error.name) {
-          case 'AxiosError':
-            watchedState.errors = 'feedBackTexts.networkError';
-            break;
-          case 'parserError':
-            watchedState.errors = 'feedBackTexts.invalidRSSResource';
-            break;
-          default:
-            watchedState.errors = error.message;
-            break;
-        }
-      });
-  });
-
-  setTimeout(() => updatePosts(watchedState), delay);
-
-  elements.postsContainer.addEventListener('click', (e) => {
-    if (e.target.tagName === 'A') {
-      const postId = e.target.id;
-      watchedState.uiState.touchedPostsIds.add(postId);
-    }
-
-    if (e.target.tagName === 'BUTTON') {
-      const button = e.target;
-      const { postId } = button.dataset;
-      watchedState.uiState.touchedPostsIds.add(postId);
-      watchedState.uiState.touchedPostId = postId;
-    }
+  }).then(() => {
+    const watchedState = watch(i18n, state, elements);
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const url = formData.get('url');
+      const urlUniqueLinks = watchedState.feeds.map(({ link }) => link);
+      validate(url, urlUniqueLinks)
+        .then(() => axios.get(createURL(url)))
+        .then((response) => {
+          const responseData = response.data.contents;
+          const { posts, feeds } = parseData(responseData);
+          const postsWithId = posts.map((post) => ({ ...post, id: uniqueId() }));
+          const feedsWithId = feeds.map((feed) => ({ ...feed, link: url, id: uniqueId() }));
+          watchedState.isValid = true;
+          watchedState.posts.unshift(...postsWithId);
+          watchedState.feeds.unshift(...feedsWithId);
+          watchedState.errors = '';
+        })
+        .catch((error) => {
+          watchedState.isValid = false;
+          switch (error.name) {
+            case 'AxiosError':
+              watchedState.errors = 'feedBackTexts.networkError';
+              break;
+            case 'parserError':
+              watchedState.errors = 'feedBackTexts.invalidRSSResource';
+              break;
+            default:
+              watchedState.errors = error.message;
+              break;
+          }
+        });
+    });
+    setTimeout(() => updatePosts(watchedState), delay);
+    elements.postsContainer.addEventListener('click', (e) => {
+      if (e.target.tagName === 'A') {
+        const postId = e.target.id;
+        watchedState.uiState.touchedPostsIds.add(postId);
+      }
+      if (e.target.tagName === 'BUTTON') {
+        const button = e.target;
+        const { postId } = button.dataset;
+        watchedState.uiState.touchedPostsIds.add(postId);
+        watchedState.uiState.touchedPostId = postId;
+      }
+    });
   });
 };
